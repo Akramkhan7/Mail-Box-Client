@@ -1,81 +1,114 @@
 import React, { useState } from "react";
 import { Modal, Button, Form, InputGroup } from "react-bootstrap";
-
-import {
-  BsPaperclip,
-  BsEmojiSmile,
-  BsLink45Deg,
-  BsTypeBold,
-  BsTypeItalic,
-  BsTrash,
-  BsThreeDots,
-} from "react-icons/bs";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { BsPaperclip, BsEmojiSmile, BsTrash } from "react-icons/bs";
 
 function ComposeMail({ show, handleClose }) {
-  
+  const [mail, setMail] = useState({
+    to: "",
+    subject: "",
+    message: "",
+  });
+
+  const changeHandler = (e) => {
+    setMail({
+      ...mail,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const submitHandler = () => {
-    alert("Mail Sent");
+    console.log(mail);
+
+    alert("Mail Sent Successfully!");
+
+    setMail({
+      to: "",
+      subject: "",
+      message: "",
+    });
+
+    handleClose();
+  };
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, false] }],
+
+      ["bold", "italic", "underline", "strike"],
+
+      [{ color: [] }, { background: [] }],
+
+      [{ list: "ordered" }, { list: "bullet" }],
+
+      [{ align: [] }],
+
+      ["blockquote", "code-block"],
+
+      ["link", "image"],
+
+      ["clean"],
+    ],
   };
 
   return (
-    <Modal size="xl" centered>
-      <Modal.Body className="p-4">
-        {/* To */}
+    <Modal show={show} onHide={handleClose} size="xl" centered>
+      <Modal.Header closeButton>
+        <Modal.Title>New Message</Modal.Title>
+      </Modal.Header>
 
-        <InputGroup className="border-bottom mb-3">
-          <InputGroup.Text className="bg-white border-0">To</InputGroup.Text>
+      <Modal.Body>
+        <InputGroup className="mb-3">
+          <InputGroup.Text>To</InputGroup.Text>
 
           <Form.Control
             type="email"
-            name="to"
             placeholder="Recipient"
-            className="border-0 shadow-none"
+            name="to"
+            value={mail.to}
+            onChange={changeHandler}
           />
-
-          <span className="text-secondary mt-2 me-2">Cc / Bcc</span>
         </InputGroup>
 
-        {/* Subject */}
-
         <Form.Control
-          className="border-0 border-bottom rounded-0 shadow-none mb-3"
+          className="mb-3"
           placeholder="Subject"
           name="subject"
+          value={mail.subject}
+          onChange={changeHandler}
         />
 
-        {/* Message */}
-
-        <Form.Control
-          as="textarea"
-          rows={18}
-          placeholder="Compose your message..."
-          name="message"
-          className="border-0 shadow-none"
+        <ReactQuill
+          theme="snow"
+          value={mail.message}
+          onChange={(value) =>
+            setMail({
+              ...mail,
+              message: value,
+            })
+          }
+          modules={modules}
+          style={{ height: "300px", marginBottom: "60px" }}
         />
 
         <hr />
 
-        {/* Footer */}
-
         <div className="d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center gap-3">
-            <Button >Send</Button>
+            <Button onClick={submitHandler}>Send</Button>
 
-            <BsPaperclip size={20} />
+            <BsPaperclip size={20} style={{ cursor: "pointer" }} />
 
-            <BsEmojiSmile size={20} />
-
-            <BsLink45Deg size={20} />
-
-            <BsTypeBold size={20} />
-
-            <BsTypeItalic size={20} />
-
-            <BsThreeDots size={20} />
+            <BsEmojiSmile size={20} style={{ cursor: "pointer" }} />
           </div>
 
-          <BsTrash size={22} className="text-danger" role="button" />
+          <BsTrash
+            size={22}
+            className="text-danger"
+            style={{ cursor: "pointer" }}
+            onClick={handleClose}
+          />
         </div>
       </Modal.Body>
     </Modal>
