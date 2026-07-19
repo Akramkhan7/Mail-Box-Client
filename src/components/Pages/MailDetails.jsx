@@ -4,11 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { DATABASE_URL } from "../../Firebase/Firebase";
 import { mailActions } from "../Store/Mail-Slice";
+import { Button } from "react-bootstrap";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 function MailDetails() {
   const { id } = useParams();
 
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const email = useSelector((state) => state.auth.email);
 
@@ -42,6 +45,19 @@ function MailDetails() {
     }
   };
 
+  const deleteHandler = async () => {
+    try {
+      const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
+      await fetch(`${DATABASE_URL}/mail/inbox/${userKey}/${id}.json`, {
+        method: "DELETE",
+      });
+      dispatch(mailActions.deleteMail(id));
+        history.push("/home");
+    } catch (err) {
+          console.log(err);
+    }
+  };
+
   if (!mail) {
     return (
       <div className="container mt-5">
@@ -67,6 +83,15 @@ function MailDetails() {
           <small className="text-muted">
             {new Date(mail.createdAt).toLocaleString()}
           </small>
+
+          <div className="d-flex justify-content-end mb-3">
+  <Button
+    variant="danger"
+    onClick={deleteHandler}
+  >
+    Delete
+  </Button>
+</div>
         </Card.Header>
 
         <Card.Body>
