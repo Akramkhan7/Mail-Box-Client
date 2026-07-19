@@ -25,14 +25,9 @@ function Sent() {
     setLoading(true);
 
     try {
-      const userKey = email
-        .trim()
-        .toLowerCase()
-        .replace(/[.@]/g, "");
+      const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
 
-      const response = await fetch(
-        `${DATABASE_URL}/mail/sent/${userKey}.json`
-      );
+      const response = await fetch(`${DATABASE_URL}/mail/sent/${userKey}.json`);
 
       if (!response.ok) {
         throw new Error("Unable to fetch sent mails");
@@ -73,77 +68,37 @@ function Sent() {
 
   return (
     <Card className="m-4 shadow">
-
       <Card.Header>
-
         <h3>Sent Mail</h3>
-
       </Card.Header>
 
-      {error && (
-        <Alert variant="danger">
-          {error}
-        </Alert>
-      )}
+      {error && <Alert variant="danger">{error}</Alert>}
 
       <ListGroup variant="flush">
-
         {sentMails.length === 0 && (
-          <ListGroup.Item>
-            No sent mails.
-          </ListGroup.Item>
+          <ListGroup.Item>No sent mails.</ListGroup.Item>
         )}
 
         {sentMails.map((mail) => {
-
-          const preview = mail.message
-            .replace(/<[^>]+>/g, "")
-            .slice(0, 80);
+          const preview = mail.message.replace(/<[^>]+>/g, "").slice(0, 80);
 
           return (
-
-            <ListGroup.Item
-              key={mail.id}
-              action
-              onClick={() => openMail(mail)}
-            >
-
+            <ListGroup.Item key={mail.id} action onClick={() => openMail(mail)}>
               <div className="d-flex justify-content-between">
-
                 <div>
-
                   <strong>To : {mail.to}</strong>
 
-                  <div className="fw-bold">
+                  <div className="fw-bold">{mail.subject}</div>
 
-                    {mail.subject}
-
-                  </div>
-
-                  <small className="text-muted">
-
-                    {preview}...
-
-                  </small>
-
+                  <small className="text-muted">{preview}...</small>
                 </div>
 
-                <small>
-
-                  {new Date(mail.createdAt).toLocaleDateString()}
-
-                </small>
-
+                <small>{new Date(mail.createdAt).toLocaleDateString()}</small>
               </div>
-
             </ListGroup.Item>
-
           );
-
         })}
-
       </ListGroup>
-
     </Card>
   );
 }

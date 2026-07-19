@@ -31,6 +31,11 @@ const mailSlice = createSlice({
       state.inbox = state.inbox.filter((mail) => mail.id !== action.payload);
       state.unreadCount = state.inbox.filter((mail) => !mail.read).length;
     },
+    clearMail(state) {
+      state.inbox = [];
+      state.sent = [];
+      state.unreadCount = 0;
+    },
   },
 });
 

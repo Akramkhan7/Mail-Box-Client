@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Navbar, Container,Badge } from "react-bootstrap";
+import { Button, Navbar, Container, Badge } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../Store/Auth-Slice";
@@ -31,11 +31,7 @@ function Home() {
               </span>
             )}
 
-<Button
-    onClick={() => history.push("/sent")}
->
-    Sent
-</Button>
+            <Button onClick={() => history.push("/sent")}>Sent</Button>
 
             <Button variant="light">
               Inbox

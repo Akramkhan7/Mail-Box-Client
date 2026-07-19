@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Card, ListGroup, Badge, Spinner, Alert } from "react-bootstrap";
+import { useEffect, useState, useRef } from "react";
+import { Card, ListGroup, Spinner, Alert } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { DATABASE_URL } from "../../Firebase/Firebase";
 import { mailActions } from "../Store/Mail-Slice";
@@ -11,19 +11,24 @@ function Inbox() {
   const history = useHistory();
 
   const mails = useSelector((state) => state.mail.inbox);
-  const unreadCount = useSelector((state) => state.mail.unreadCount);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const initialLoadRef = useRef(true);
 
   useEffect(() => {
-    if (email) {
+    if (!email) return;
+
+    fetchInbox();
+    const interval = setInterval(() => {
       fetchInbox();
-    }
+    }, 2000);
+
+    return () => clearInterval(interval);
   }, [email]);
 
   const fetchInbox = async () => {
-    setLoading(true);
+    if (initialLoadRef.current) setLoading(true);
     setError("");
 
     try {
@@ -38,7 +43,6 @@ function Inbox() {
       }
 
       const data = await response.json();
-
       const loadedMails = [];
 
       for (const key in data) {
@@ -56,8 +60,10 @@ function Inbox() {
       setError("Could not load your inbox. Please try again.");
     } finally {
       setLoading(false);
+      initialLoadRef.current = false;
     }
   };
+
   const openMail = (mail) => {
     history.push(`/mail/${mail.id}`);
   };
@@ -88,9 +94,11 @@ function Inbox() {
         )}
 
         {mails.map((mail) => {
-          const plainText = mail.message.replace(/<[^>]+>/g, "");
+          const plainText = (mail.message || "").replace(/<[^>]+>/g, "");
           const preview =
-            plainText.length > 80 ? plainText.slice(0, 80) + "..." : plainText;
+            plainText.length > 80
+              ? plainText.slice(0, 80) + "..."
+              : plainText;
 
           return (
             <ListGroup.Item

@@ -51,10 +51,10 @@ function MailDetails() {
       await fetch(`${DATABASE_URL}/mail/inbox/${userKey}/${id}.json`, {
         method: "DELETE",
       });
-      dispatch(mailActions.deleteMail(id));
-        history.push("/home");
+      dispatch(mailActions.deleteMail(id))
+      history.push("/home");
     } catch (err) {
-          console.log(err);
+      console.log(err);
     }
   };
 
@@ -85,13 +85,10 @@ function MailDetails() {
           </small>
 
           <div className="d-flex justify-content-end mb-3">
-  <Button
-    variant="danger"
-    onClick={deleteHandler}
-  >
-    Delete
-  </Button>
-</div>
+            <Button variant="danger" onClick={deleteHandler}>
+              Delete
+            </Button>
+          </div>
         </Card.Header>
 
         <Card.Body>
