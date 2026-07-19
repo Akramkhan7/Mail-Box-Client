@@ -6,10 +6,11 @@ import { DATABASE_URL } from "../../Firebase/Firebase";
 import { mailActions } from "../Store/Mail-Slice";
 import { Button } from "react-bootstrap";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import useApi from "../Hooks/ useApi"
 
 function MailDetails() {
   const { id } = useParams();
-
+const { request } = useApi();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -30,7 +31,7 @@ function MailDetails() {
     try {
       const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
 
-      await fetch(`${DATABASE_URL}/mail/inbox/${userKey}/${id}.json`, {
+      await request(`${DATABASE_URL}/mail/inbox/${userKey}/${id}.json`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -49,7 +50,7 @@ function MailDetails() {
   const deleteHandler = async () => {
     try {
       const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
-      await fetch(`${DATABASE_URL}/mail/inbox/${userKey}/${id}.json`, {
+      await request(`${DATABASE_URL}/mail/inbox/${userKey}/${id}.json`, {
         method: "DELETE",
       });
       dispatch(mailActions.deleteMail(id));

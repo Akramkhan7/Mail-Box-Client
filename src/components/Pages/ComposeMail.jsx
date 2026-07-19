@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useApi from "../Hooks/ useApi";
 import {
   Container,
   Card,
@@ -23,6 +24,7 @@ import { useSelector } from "react-redux";
 function ComposeMail() {
   const history = useHistory();
   const senderEmail = useSelector((state) => state.auth.email);
+  const { request } = useApi();
 
   const [mail, setMail] = useState({
     to: "",
@@ -68,7 +70,7 @@ function ComposeMail() {
       };
 
       // Save in sender's sent box
-      const sentRes = await fetch(
+      const sentRes = await request(
         `${DATABASE_URL}/mail/sent/${senderKey}.json`,
         {
           method: "POST",
@@ -78,7 +80,7 @@ function ComposeMail() {
       );
 
       // Save in receiver's inbox
-      const inboxRes = await fetch(
+      const inboxRes = await request(
         `${DATABASE_URL}/mail/inbox/${receiverKey}.json`,
         {
           method: "POST",

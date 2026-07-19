@@ -4,11 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { DATABASE_URL } from "../../Firebase/Firebase";
 import { mailActions } from "../Store/Mail-Slice";
+import useApi from "../Hooks/ useApi"
 
 function Sent() {
   const email = useSelector((state) => state.auth.email);
   const sentMails = useSelector((state) => state.mail.sent);
-
+const{request} = useApi();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -27,13 +28,11 @@ function Sent() {
     try {
       const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
 
-      const response = await fetch(`${DATABASE_URL}/mail/sent/${userKey}.json`);
+      const data = await request(`${DATABASE_URL}/mail/sent/${userKey}.json`);
 
-      if (!response.ok) {
-        throw new Error("Unable to fetch sent mails");
-      }
+     
 
-      const data = await response.json();
+      console.log(data);
 
       const loadedMails = [];
 
