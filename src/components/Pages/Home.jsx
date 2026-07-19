@@ -1,20 +1,46 @@
 import React from "react";
-import Button from "react-bootstrap/Button";
+import { Button, Navbar, Container } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { authActions } from "../Store/Auth-Slice";
+import Inbox from "../Mail/Inbox"
 
 function Home() {
   const history = useHistory();
+  const dispatch = useDispatch();
+  const email = useSelector((state) => state.auth.email);
+
+  const logoutHandler = () => {
+    dispatch(authActions.logout());
+    history.push("/");
+  };
 
   return (
-    <>
-   
-  <header>
-    
-  </header>
-    <div className="container mt-5">
-      <Button onClick={() => history.push("/compose")}>Compose</Button>
+    <div>
+      <Navbar bg="white" className="shadow-sm px-4 py-3">
+        <Container fluid className="d-flex justify-content-between align-items-center px-0">
+          <div>
+            <strong>Mail Box</strong>
+            {email && (
+              <span className="text-muted ms-3" style={{ fontSize: "0.9rem" }}>
+                Logged in as: {email}
+              </span>
+            )}
+          </div>
+
+          <div className="d-flex gap-2">
+            <Button onClick={() => history.push("/compose")}>Compose</Button>
+            <Button variant="outline-secondary" onClick={logoutHandler}>
+              Logout
+            </Button>
+          </div>
+        </Container>
+      </Navbar>
+
+      <div className="container mt-4">
+        <Inbox />
+      </div>
     </div>
-     </>
   );
 }
 

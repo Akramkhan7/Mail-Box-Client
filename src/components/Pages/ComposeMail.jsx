@@ -48,65 +48,67 @@ function ComposeMail() {
     ],
   };
 
- const submitHandler = async () => {
-  if (!mail.to || !mail.subject) {
-    alert("Please fill in recipient and subject");
-    return;
-  }
-
-  try {
-    const senderKey = senderEmail.replace(/[.@]/g, "");
-    const receiverKey = mail.to.replace(/[.@]/g, "");
-
-    const mailData = {
-      from: senderEmail,
-      to: mail.to,
-      subject: mail.subject,
-      message: mail.message,
-      read: false,
-      createdAt: new Date().toISOString(),
-    };
-
-    // Save in sender's sent box
-    const sentRes = await fetch(`${DATABASE_URL}/mail/sent/${senderKey}.json`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(mailData),
-    });
-
-    // Save in receiver's inbox
-    const inboxRes = await fetch(`${DATABASE_URL}/mail/inbox/${receiverKey}.json`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(mailData),
-    });
-
-    if (!sentRes.ok || !inboxRes.ok) {
-      throw new Error("Failed to send mail");
+  const submitHandler = async () => {
+    if (!mail.to || !mail.subject) {
+      alert("Please fill in recipient and subject");
+      return;
     }
 
-    alert("Mail Sent Successfully!");
+    try {
+      const senderKey = senderEmail.trim().toLowerCase().replace(/[.@]/g, "");
+      const receiverKey = mail.to.trim().toLowerCase().replace(/[.@]/g, "");
 
-    setMail({ to: "", subject: "", message: "" });
-    history.push("/home");
-  } catch (err) {
-    console.log(err);
-    alert("Failed to send mail. Please try again.");
-  }
-};
+      const mailData = {
+        from: senderEmail,
+        to: mail.to,
+        subject: mail.subject,
+        message: mail.message,
+        read: false,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Save in sender's sent box
+      const sentRes = await fetch(
+        `${DATABASE_URL}/mail/sent/${senderKey}.json`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(mailData),
+        },
+      );
+
+      // Save in receiver's inbox
+      const inboxRes = await fetch(
+        `${DATABASE_URL}/mail/inbox/${receiverKey}.json`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(mailData),
+        },
+      );
+
+      if (!sentRes.ok || !inboxRes.ok) {
+        throw new Error("Failed to send mail");
+      }
+
+      alert("Mail Sent Successfully!");
+
+      setMail({ to: "", subject: "", message: "" });
+      history.push("/home");
+    } catch (err) {
+      console.log(err);
+      alert("Failed to send mail. Please try again.");
+    }
+  };
 
   return (
     <Container fluid className="bg-dark min-vh-100 py-4">
-
       <Card
         className="mx-auto shadow"
         style={{ maxWidth: "1200px", minHeight: "85vh" }}
       >
-
         <Card.Header className="bg-white border-0">
-
           <div className="d-flex align-items-center">
-
             <BsArrowLeft
               size={22}
               role="button"
@@ -115,18 +117,12 @@ function ComposeMail() {
             />
 
             <h5 className="mb-0">New Message</h5>
-
           </div>
-
         </Card.Header>
 
         <Card.Body>
-
           <InputGroup className="mb-3">
-
-            <InputGroup.Text className="bg-white">
-              To
-            </InputGroup.Text>
+            <InputGroup.Text className="bg-white">To</InputGroup.Text>
 
             <Form.Control
               type="email"
@@ -135,7 +131,6 @@ function ComposeMail() {
               value={mail.to}
               onChange={changeHandler}
             />
-
           </InputGroup>
 
           <Form.Control
@@ -158,47 +153,24 @@ function ComposeMail() {
             modules={modules}
             style={{ height: "400px", marginBottom: "60px" }}
           />
-
         </Card.Body>
 
         <Card.Footer className="bg-white">
-
           <Row className="align-items-center">
-
             <Col className="d-flex align-items-center gap-3">
+              <Button onClick={submitHandler}>Send</Button>
 
-              <Button onClick={submitHandler}>
-                Send
-              </Button>
+              <BsPaperclip size={20} role="button" />
 
-              <BsPaperclip
-                size={20}
-                role="button"
-              />
-
-              <BsEmojiSmile
-                size={20}
-                role="button"
-              />
-
+              <BsEmojiSmile size={20} role="button" />
             </Col>
 
             <Col xs="auto">
-
-              <BsTrash
-                size={22}
-                role="button"
-                className="text-danger"
-              />
-
+              <BsTrash size={22} role="button" className="text-danger" />
             </Col>
-
           </Row>
-
         </Card.Footer>
-
       </Card>
-
     </Container>
   );
 }

@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
+import { Card, ListGroup, Badge, Spinner, Alert } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { Card, ListGroup, Spinner } from "react-bootstrap";
 import { DATABASE_URL } from "../../Firebase/Firebase";
 
 function Inbox() {
   const email = useSelector((state) => state.auth.email);
+  console.log(email);
 
   const [mails, setMails] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if(email)
-    fetchInbox();
-  }, []);
+    if (email) {
+      fetchInbox();
+    }
+  }, [email]);
 
   const fetchInbox = async () => {
     setLoading(true);
+    setError("");
 
     try {
       const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
@@ -24,6 +28,11 @@ function Inbox() {
         `${DATABASE_URL}/mail/inbox/${userKey}.json`
       );
 
+      if (!response.ok) {
+        throw new Error("Failed to load inbox");
+      }
+
+      
       const data = await response.json();
       console.log(data);
 
@@ -36,56 +45,83 @@ function Inbox() {
         });
       }
 
+      loadedMails.reverse();
+
       setMails(loadedMails);
     } catch (err) {
       console.log(err);
+      setError("Could not load your inbox. Please try again.");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    setLoading(false);
+  const openMail = (mail) => {
+    // hook this up to a detail view / route later
+    console.log("Open mail:", mail);
   };
 
   if (loading) {
-    return <Spinner animation="border" />;
+    return (
+      <div className="text-center mt-5">
+        <Spinner animation="border" />
+      </div>
+    );
   }
 
   return (
-    <Card className="m-4">
+    <Card className="m-4 shadow">
       <Card.Header>
-        <h4>Inbox</h4>
+        <h3 className="mb-0">Inbox</h3>
       </Card.Header>
 
-      <ListGroup variant="flush">
+      {error && (
+        <Alert variant="danger" className="m-3 mb-0">
+          {error}
+        </Alert>
+      )}
 
-        {mails.length === 0 && (
+      <ListGroup variant="flush">
+        {mails.length === 0 && !error && (
           <ListGroup.Item>No mails found.</ListGroup.Item>
         )}
 
-        {mails.map((mail) => (
-          <ListGroup.Item key={mail.id}>
+        {mails.map((mail) => {
+          const plainText = mail.message.replace(/<[^>]+>/g, "");
+          const preview =
+            plainText.length > 80
+              ? plainText.slice(0, 80) + "..."
+              : plainText;
 
-            <div className="d-flex justify-content-between">
+          return (
+            <ListGroup.Item
+              key={mail.id}
+              action
+              className="py-3"
+              onClick={() => openMail(mail)}
+            >
+              <div className="d-flex justify-content-between">
+                <div>
+                  {!mail.read && (
+                    <Badge bg="primary" className="me-2">
+                      ●
+                    </Badge>
+                  )}
 
-              <div>
-                <h6>{mail.from}</h6>
+                  <strong>{mail.from}</strong>
 
-                <strong>{mail.subject}</strong>
+                  <div className="fw-bold mt-1">{mail.subject}</div>
 
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: mail.message,
-                  }}
-                />
+                  <small className="text-muted">{preview}</small>
+                </div>
+
+                <small className="text-muted">
+                  {new Date(mail.createdAt).toLocaleDateString()}
+                </small>
               </div>
-
-              <small>
-                {new Date(mail.createdAt).toLocaleString()}
-              </small>
-
-            </div>
-
-          </ListGroup.Item>
-        ))}
-
+            </ListGroup.Item>
+          );
+        })}
       </ListGroup>
     </Card>
   );

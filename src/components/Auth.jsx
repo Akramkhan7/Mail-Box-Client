@@ -7,7 +7,7 @@ import { auth } from "../Firebase/Firebase";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { authActions } from "./Store/Auth-Slice";
+import { authActions } from "./Store/Auth-Slice"
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -52,16 +52,17 @@ function Auth() {
       }
 
       const token = await userCredential.user.getIdToken();
+      console.log(email);
 
       localStorage.setItem("token", token);
       localStorage.setItem("userId", userCredential.user.uid);
-      localStorage.setItem("email", email);
+      localStorage.setItem("email", userCredential.user.email);
 
       dispatch(
         authActions.login({
-          token: data.idToken,
-          userId: email.replace(/[.@]/g, ""),
-          email: email,
+          token: token,
+          userId: userCredential.user.uid,
+          email: userCredential.user.email,
         }),
       );
 
