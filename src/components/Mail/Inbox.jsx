@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
 import { Card, ListGroup, Badge, Spinner, Alert } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DATABASE_URL } from "../../Firebase/Firebase";
+import { mailActions } from "../Store/Mail-Slice";
+import { useHistory } from "react-router-dom";
 
 function Inbox() {
   const email = useSelector((state) => state.auth.email);
-  console.log(email);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
-  const [mails, setMails] = useState([]);
+  const mails = useSelector((state) => state.mail.inbox);
+  const unreadCount = useSelector((state) => state.mail.unreadCount);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -25,16 +30,14 @@ function Inbox() {
       const userKey = email.trim().toLowerCase().replace(/[.@]/g, "");
 
       const response = await fetch(
-        `${DATABASE_URL}/mail/inbox/${userKey}.json`
+        `${DATABASE_URL}/mail/inbox/${userKey}.json`,
       );
 
       if (!response.ok) {
         throw new Error("Failed to load inbox");
       }
 
-      
       const data = await response.json();
-      console.log(data);
 
       const loadedMails = [];
 
@@ -47,7 +50,7 @@ function Inbox() {
 
       loadedMails.reverse();
 
-      setMails(loadedMails);
+      dispatch(mailActions.setInbox(loadedMails));
     } catch (err) {
       console.log(err);
       setError("Could not load your inbox. Please try again.");
@@ -55,10 +58,8 @@ function Inbox() {
       setLoading(false);
     }
   };
-
   const openMail = (mail) => {
-    // hook this up to a detail view / route later
-    console.log("Open mail:", mail);
+    history.push(`/mail/${mail.id}`);
   };
 
   if (loading) {
@@ -89,9 +90,7 @@ function Inbox() {
         {mails.map((mail) => {
           const plainText = mail.message.replace(/<[^>]+>/g, "");
           const preview =
-            plainText.length > 80
-              ? plainText.slice(0, 80) + "..."
-              : plainText;
+            plainText.length > 80 ? plainText.slice(0, 80) + "..." : plainText;
 
           return (
             <ListGroup.Item
@@ -103,9 +102,13 @@ function Inbox() {
               <div className="d-flex justify-content-between">
                 <div>
                   {!mail.read && (
-                    <Badge bg="primary" className="me-2">
-                      ●
-                    </Badge>
+                    <span
+                      className="bg-primary rounded-circle d-inline-block me-2"
+                      style={{
+                        width: "10px",
+                        height: "10px",
+                      }}
+                    />
                   )}
 
                   <strong>{mail.from}</strong>

@@ -2,8 +2,9 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Auth from "./components/Auth";
 import Home from "./components/Pages/Home";
-import ComposeMail from "./components/Pages/ComposeMail"
+import ComposeMail from "./components/Pages/ComposeMail";
 import Inbox from "./components/Mail/Inbox";
+import MailDetails from "./components/Pages/MailDetails";
 
 function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -23,7 +24,11 @@ function App() {
       </Route>
 
       <Route path="/inbox">
-    <Inbox />
+        <Inbox />
+      </Route>
+
+      <Route path="/mail/:id">
+    <MailDetails />
 </Route>
 
       <Redirect to="/" />

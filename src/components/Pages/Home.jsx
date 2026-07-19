@@ -1,14 +1,15 @@
 import React from "react";
-import { Button, Navbar, Container } from "react-bootstrap";
+import { Button, Navbar, Container,Badge } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { authActions } from "../Store/Auth-Slice";
-import Inbox from "../Mail/Inbox"
+import Inbox from "../Mail/Inbox";
 
 function Home() {
   const history = useHistory();
   const dispatch = useDispatch();
   const email = useSelector((state) => state.auth.email);
+  const unreadCount = useSelector((state) => state.mail.unreadCount);
 
   const logoutHandler = () => {
     dispatch(authActions.logout());
@@ -18,7 +19,10 @@ function Home() {
   return (
     <div>
       <Navbar bg="white" className="shadow-sm px-4 py-3">
-        <Container fluid className="d-flex justify-content-between align-items-center px-0">
+        <Container
+          fluid
+          className="d-flex justify-content-between align-items-center px-0"
+        >
           <div>
             <strong>Mail Box</strong>
             {email && (
@@ -26,6 +30,13 @@ function Home() {
                 Logged in as: {email}
               </span>
             )}
+
+            <Button variant="light">
+              Inbox
+              <Badge bg="primary" className="ms-2">
+                {unreadCount}
+              </Badge>
+            </Button>
           </div>
 
           <div className="d-flex gap-2">
