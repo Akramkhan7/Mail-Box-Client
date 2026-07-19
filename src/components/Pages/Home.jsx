@@ -31,6 +31,12 @@ function Home() {
               </span>
             )}
 
+<Button
+    onClick={() => history.push("/sent")}
+>
+    Sent
+</Button>
+
             <Button variant="light">
               Inbox
               <Badge bg="primary" className="ms-2">

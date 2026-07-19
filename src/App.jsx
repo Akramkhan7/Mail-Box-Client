@@ -5,6 +5,8 @@ import Home from "./components/Pages/Home";
 import ComposeMail from "./components/Pages/ComposeMail";
 import Inbox from "./components/Mail/Inbox";
 import MailDetails from "./components/Pages/MailDetails";
+import SentDetails from "./components/Pages/SentDetails.jsx"
+import Sent from "./components/Pages/Sent";
 
 function App() {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -26,6 +28,14 @@ function App() {
       <Route path="/inbox">
         <Inbox />
       </Route>
+
+      <Route path="/sent/:id">
+    <SentDetails />
+</Route>
+
+      <Route path="/sent">
+    <Sent />
+</Route>
 
       <Route path="/mail/:id">
     <MailDetails />

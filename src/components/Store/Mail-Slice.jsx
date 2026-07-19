@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   inbox: [],
+  sent: [],
   unreadCount: 0,
 };
 
@@ -12,6 +13,10 @@ const mailSlice = createSlice({
     setInbox(state, action) {
       state.inbox = action.payload;
       state.unreadCount = action.payload.filter((mail) => !mail.read).length;
+    },
+
+    setSent(state, action) {
+      state.sent = action.payload;
     },
 
     markAsRead(state, action) {
