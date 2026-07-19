@@ -1,25 +1,20 @@
-import React, { useState } from "react";
+import React from "react";
 import Button from "react-bootstrap/Button";
-import ComposeMail from "./ComposeMail";
+import { useHistory } from "react-router-dom";
 
 function Home() {
-  const [showCompose, setShowCompose] = useState(false);
+  const history = useHistory();
 
   return (
+    <>
+   
+  <header>
+    
+  </header>
     <div className="container mt-5">
-
-      <Button
-        onClick={() => setShowCompose(true)}
-      >
-        Compose
-      </Button>
-
-      <ComposeMail
-        show={showCompose}
-        handleClose={() => setShowCompose(false)}
-      />
-
+      <Button onClick={() => history.push("/compose")}>Compose</Button>
     </div>
+     </>
   );
 }
 

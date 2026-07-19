@@ -4,6 +4,7 @@ const initialState = {
   isAuthenticated: !!localStorage.getItem("token"),
   token: localStorage.getItem("token") || "",
   userId: localStorage.getItem("userId") || "",
+  email: localStorage.getItem("email") || "",
 };
 
 const authSlice = createSlice({
@@ -11,20 +12,22 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     login(state, action) {
-      state.isAuthenticated = true;
-      state.token = action.payload.token;
-      state.userId = action.payload.userId;
-    },
+  state.isAuthenticated = true;
+  state.token = action.payload.token;
+  state.userId = action.payload.userId;
+  state.email = action.payload.email;
+},
 
     logout(state) {
-      state.token = "";
-      state.userId = "";
-      state.isAuthenticated = false;
+  state.token = "";
+  state.userId = "";
+  state.email = "";
+  state.isAuthenticated = false;
 
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-    },
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("email");
+}
   },
 });
 
